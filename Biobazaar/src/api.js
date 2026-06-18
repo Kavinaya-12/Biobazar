@@ -1,5 +1,5 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://biobazaar-backend.onrender.com" 
+  baseURL: "https://biobazar.onrender.com" 
 });
