@@ -1,0 +1,109 @@
+.wishlist-container {
+  padding: 40px 20px;
+  text-align: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.wishlist-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 25px;
+  color: #2c786c; 
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.wishlist-container p {
+  font-size: 1.1rem;
+  color: #777;
+  margin-top: 30px;
+  font-style: italic;
+}
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+  justify-items: center;
+}
+
+.wishlist-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wishlist-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.wishlist-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 15px;
+}
+
+.wishlist-no-image {
+  width: 100%;
+  height: 180px;
+  border-radius: 15px;
+  background: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.wishlist-card h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 10px 0 5px;
+}
+
+.wishlist-card p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.wishlist-card button {
+  background-color: #e63946; 
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 25px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+}
+
+.wishlist-card button:hover {
+  background-color: #b91d28;
+  transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

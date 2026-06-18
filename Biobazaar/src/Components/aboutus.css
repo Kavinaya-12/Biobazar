@@ -1,0 +1,122 @@
+.about-wrapper {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #acd1c9 50%, #f5fbf9 50%);
+  padding: 4rem 2rem;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif;
+  color: #1f2d3d;
+}
+
+.about-shapes .shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  background: #3a9d7a;
+  filter: blur(30px);
+  animation: drift 20s infinite alternate ease-in-out;
+}
+
+.shape1 {
+  width: 250px;
+  height: 250px;
+  top: 10%;
+  left: -80px;
+}
+
+.shape2 {
+  width: 300px;
+  height: 300px;
+  bottom: 15%;
+  right: -100px;
+  background: #64c5a2;
+}
+
+.shape3 {
+  width: 180px;
+  height: 180px;
+  top: 50%;
+  left: 50%;
+  background: #2f7a5d;
+}
+
+@keyframes drift {
+  from { transform: translateY(0) rotate(0); }
+  to { transform: translateY(-50px) rotate(20deg); }
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  align-items: start;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.about-left {
+  text-align: left;
+}
+
+.about-heading {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #0f3d2c;
+}
+
+.about-subtext {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2f4f3e;
+}
+
+.about-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.about-card h2 {
+  font-size: 1.6rem;
+  color: #207d5c;
+  margin-bottom: 0.8rem;
+}
+
+.about-card p,
+.about-card ul {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #334e43;
+}
+
+.about-card ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.about-card li {
+  margin-bottom: 0.5rem;
+}
+
+.about-quote {
+  margin-top: 3rem;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #145c43;
+  position: relative;
+  z-index: 1;
+  font-style: italic;
+}                    

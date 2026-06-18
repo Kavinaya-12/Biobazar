@@ -1,0 +1,91 @@
+body {
+  background: linear-gradient(135deg, #e6f2ec, #fdfdfd);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sell-container {
+  max-width: 700px;
+  margin: 60px auto;
+  padding: 40px;
+  background: #fefefe;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #d9e4dd;
+}
+
+.sell-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #1f3b2d;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+}
+
+.sell-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sell-form label {
+  font-weight: 600;
+  font-size: 15px;
+  color: #2e2e2e;
+  margin-bottom: 6px;
+}
+
+.sell-form input,
+.sell-form select,
+.sell-form textarea {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  font-size: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+.sell-form input:focus,
+.sell-form select:focus,
+.sell-form textarea:focus {
+  border-color: #34a853;
+  outline: none;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(52, 168, 83, 0.3);
+}
+
+.sell-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.sell-form input[type="file"] {
+  padding: 10px;
+  background: #f5f5f5;
+  cursor: pointer;
+  border: 1px dashed #bbb;
+  transition: border-color 0.3s;
+}
+
+.sell-form input[type="file"]:hover {
+  border-color: #34a853;
+}
+
+.sell-form button {
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #34a853, #1f7a3e);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.sell-form button:hover {
+  background: linear-gradient(135deg, #1f7a3e, #166533);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(31, 122, 62, 0.25);
+}

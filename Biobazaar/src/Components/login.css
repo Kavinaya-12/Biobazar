@@ -1,0 +1,130 @@
+.login-wrapper {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #acd1c9 50%, #f5fbf9 50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif;
+  color: #1f2d3d;
+}
+
+.login-shapes .shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  background: #3a9d7a;
+  filter: blur(30px);
+  animation: drift 20s infinite alternate ease-in-out;
+}
+
+.login-shape1 {
+  width: 250px;
+  height: 250px;
+  top: 10%;
+  left: -80px;
+}
+
+.login-shape2 {
+  width: 300px;
+  height: 300px;
+  bottom: 15%;
+  right: -100px;
+  background: #64c5a2;
+}
+
+.login-shape3 {
+  width: 180px;
+  height: 180px;
+  top: 50%;
+  left: 50%;
+  background: #2f7a5d;
+}
+
+@keyframes drift {
+  from { transform: translateY(0) rotate(0); }
+  to { transform: translateY(-50px) rotate(20deg); }
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  backdrop-filter: blur(12px);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.login-box h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #0f3d2c;
+}
+
+.login-box label {
+  display: block;
+  text-align: left;
+  font-weight: 500;
+  margin: 0.8rem 0 0.4rem;
+  color: #2f4f3e;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #cce3da;
+  outline: none;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.login-box input:focus {
+  border-color: #3a9d7a;
+  box-shadow: 0 0 6px rgba(58, 157, 122, 0.4);
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3a9d7a, #64c5a2);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.login-btn:hover {
+  background: linear-gradient(135deg, #2f7a5d, #3a9d7a);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+.login-signup-link {
+  margin-top: 1.2rem;
+  font-size: 0.95rem;
+  color: #2f4f3e;
+}
+
+.login-signup-link a {
+  color: #207d5c;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.login-signup-link a:hover {
+  color: #145c43;
+}

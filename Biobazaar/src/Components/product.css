@@ -1,0 +1,91 @@
+.products-container {
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(5px); 
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  .products-container h1 {
+    color: rgb(180, 188, 196);
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 40px;
+    animation: fadeIn 2s ease-in-out;
+  }
+  
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    align-items: stretch;
+  }
+  
+
+  .product-card {
+    background-color: rgba(42, 42, 42, 0.8); 
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-10px); 
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); 
+  }
+  
+  .product-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .product-card h3 {
+    color: rgb(180, 188, 196);
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .product-card p {
+    color: #ffffff; 
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+
+  .product-card button {
+    background-color: rgb(180, 188, 196);
+    color: #000000; 
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 5px;
+  }
+  
+  .product-card button:hover {
+    background-color: transparent;
+    color: rgb(180, 188, 196); 
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .products-container p {
+    color: rgb(180, 188, 196);
+    text-align: center;
+    font-size: 20px;
+    animation: fadeIn 2s ease-in-out;
+  }
+  
