@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// Initial State
 const initialState = {
   token: localStorage.getItem("token") || null,
   userId: localStorage.getItem("userId") || null,
@@ -9,23 +10,34 @@ const initialState = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
+
   reducers: {
+    // Login / Auto Login after Signup
     loginSuccess: (state, action) => {
-      state.token = action.payload.token;
-      state.userId = action.payload.userId;
+      const { token, userId } = action.payload;
+
+      state.token = token;
+      state.userId = userId;
       state.isAuthenticated = true;
-      localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("userId", action.payload.userId);
+
+      // Persist Authentication
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
     },
+
+    // Logout
     logout: (state) => {
       state.token = null;
       state.userId = null;
       state.isAuthenticated = false;
+
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
+      localStorage.removeItem("userEmail");
     },
   },
 });
 
 export const { loginSuccess, logout } = authSlice.actions;
+
 export default authSlice.reducer;

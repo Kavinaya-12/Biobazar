@@ -1,14 +1,14 @@
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { loginSuccess } from '../redux/authSlice';
-import React, { useState } from 'react';
-import './login.css'; 
-import { api } from '../api';
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
+import { loginSuccess } from "../redux/authSlice";
+import "./login.css";
+import { api } from "../api";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -16,25 +16,27 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await api.post('/user/login', { email, password });
+      const response = await api.post("/user/login", {
+        email,
+        password,
+      });
+
       const { token, userId } = response.data;
 
+      // Save in Redux + LocalStorage
       dispatch(loginSuccess({ token, userId }));
 
- localStorage.setItem("token", token);
- localStorage.setItem("userId", userId);    
-    localStorage.setItem("userEmail", email); 
+      alert("Successfully Logged In!");
 
-      alert("Successfully logged in!");
-      navigate('/collections');
+      // Redirect
+      navigate("/collections");
     } catch (error) {
-      console.error("Login error:", error);
-      if (error.response && error.response.status === 401) {
-        alert("Login failed: Invalid email or password");
-      } else if (error.response && error.response.status === 404) {
-        alert("User not found");
+      console.error(error);
+
+      if (error.response?.status === 400) {
+        alert(error.response.data.error);
       } else {
-        alert("An error occurred. Please try again later.");
+        alert("Login Failed");
       }
     }
   };
@@ -48,29 +50,39 @@ const Login = () => {
       </div>
 
       <div className="login-box">
-        <h1>Login</h1>
+        <h1>LOGIN</h1>
+
         <form onSubmit={handleSubmit}>
-          <label>Email:</label>
+
+          <label>Email</label>
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="Enter Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <label>Password:</label>
+
+          <label>Password</label>
           <input
             type="password"
-            placeholder="Enter your password"
+            placeholder="Enter Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit" className="login-btn">Login</button>
+
+          <button className="login-btn" type="submit">
+            Login
+          </button>
+
         </form>
+
         <p className="login-signup-link">
-          Don't have an account? <a href="/signup">Create one</a>
+          Don't have an account?{" "}
+          <Link to="/signup">Create one</Link>
         </p>
+
       </div>
     </div>
   );
