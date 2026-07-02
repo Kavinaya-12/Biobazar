@@ -26,10 +26,9 @@ const Lifestyle = () => {
   const wishlist = useSelector(
     (state) => state.wishlist.items
   );
+  const userId = useSelector((state) => state.auth.userId);
 
   const [addedToCart, setAddedToCart] = useState({});
-
-  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     dispatch(clearSearch());
@@ -97,33 +96,32 @@ const Lifestyle = () => {
 
   const handleWishlistToggle = async (product) => {
     try {
-
       const exists = wishlist.some(
         (item) => item.productId._id === product._id
       );
 
       if (exists) {
-
         const res = await api.post("/wishlist/remove", {
           userId,
           productId: product._id,
         });
 
-        dispatch(setWishlist(res.data.wishlist.items));
-
+        if (res.data.success) {
+          dispatch(setWishlist(res.data.wishlist.items));
+        }
       } else {
-
         const res = await api.post("/wishlist/add", {
           userId,
           productId: product._id,
         });
 
-        dispatch(setWishlist(res.data.wishlist.items));
-
+        if (res.data.success) {
+          dispatch(setWishlist(res.data.wishlist.items));
+        }
       }
-
     } catch (err) {
-      console.error(err);
+      console.error("Wishlist error:", err);
+      alert(err.response?.data?.message || "Error updating wishlist");
     }
   };
 
