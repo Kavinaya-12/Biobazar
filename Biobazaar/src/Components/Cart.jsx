@@ -18,8 +18,10 @@ const CartPage = () => {
   const userId = useSelector((state) => state.auth.userId);
 
   useEffect(() => {
-    loadCart();
-  }, []);
+    if (userId) {
+      loadCart();
+    }
+  }, [userId]);
 
   const loadCart = async () => {
     try {
@@ -35,7 +37,7 @@ const CartPage = () => {
 
   const handleIncrement = async (productId, quantity) => {
     try {
-      await api.post("/cart/add", {
+      await api.put("/cart/quantity", {
         userId,
         productId,
         quantity: quantity + 1,
@@ -55,7 +57,7 @@ const CartPage = () => {
           productId,
         });
       } else {
-        await api.post("/cart/add", {
+        await api.put("/cart/quantity", {
           userId,
           productId,
           quantity: quantity - 1,

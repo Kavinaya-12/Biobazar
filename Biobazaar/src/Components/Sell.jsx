@@ -18,6 +18,11 @@ const Sell = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!image) {
+      alert('Please select an image');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('name', name);
     formData.append('type', type);
@@ -32,10 +37,21 @@ const Sell = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      alert('Product added successfully!');
+
+      if (response.data.success) {
+        alert('Product added successfully!');
+        
+        // Reset form
+        setName('');
+        setType('');
+        setPrice('');
+        setDescription('');
+        setImage(null);
+        setcollec('Foods');
+      }
     } catch (error) {
       console.error('Error adding product:', error);
-      alert('Failed to add product');
+      alert(error.response?.data?.message || 'Failed to add product');
     }
   };
 
@@ -77,7 +93,7 @@ const Sell = () => {
         <label>Image:</label>
         <input type="file" onChange={handleImageChange} required />
 
-        <label>collec:</label>
+        <label>Collection:</label>
         <select
           value={collec}
           onChange={(e) => setcollec(e.target.value)}

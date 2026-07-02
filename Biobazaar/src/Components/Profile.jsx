@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import "./profile.css";
 import { api } from "../api";
 
 const Profile = () => {
 
-  const userId = localStorage.getItem("userId");
-  const userEmail = localStorage.getItem("userEmail");
+  const userId = useSelector((state) => state.auth.userId);
 
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +26,7 @@ const Profile = () => {
 
     fetchProfile();
 
-  }, []);
+  }, [userId]);
 
   const fetchProfile = async () => {
 

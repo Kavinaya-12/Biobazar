@@ -12,6 +12,8 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 
+const { authenticate } = require("../middleware/auth");
+
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -32,6 +34,7 @@ const upload = multer({ storage });
 
 router.post(
   "/sell",
+  authenticate,
   upload.single("image"),
   sellProduct
 );
@@ -58,12 +61,14 @@ router.get(
 
 router.put(
   "/:id",
+  authenticate,
   upload.single("image"),
   updateProduct
 );
 
 router.delete(
   "/:id",
+  authenticate,
   deleteProduct
 );
 

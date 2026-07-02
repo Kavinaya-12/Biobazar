@@ -29,16 +29,6 @@ const Login = () => {
       localStorage.setItem("userId", userId);
       localStorage.setItem("userEmail", email);
 
-      setTimeout(() => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userEmail");
-
-        alert("Session expired. Please login again.");
-
-        navigate("/login");
-      }, 60 * 60 * 1000);
-
       alert("Successfully Logged In!");
 
       navigate("/collections");

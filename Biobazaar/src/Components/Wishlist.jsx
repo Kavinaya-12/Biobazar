@@ -13,12 +13,13 @@ const Wishlist = () => {
   const dispatch = useDispatch();
 
   const { items, loading } = useSelector((state) => state.wishlist);
-
-  const userId = localStorage.getItem("userId");
+  const userId = useSelector((state) => state.auth.userId);
 
   useEffect(() => {
-    fetchWishlist();
-  }, []);
+    if (userId) {
+      fetchWishlist();
+    }
+  }, [userId]);
 
   const fetchWishlist = async () => {
     try {
@@ -26,7 +27,7 @@ const Wishlist = () => {
 
       const res = await api.get(`/wishlist/${userId}`);
 
-      dispatch(setWishlist(res.data.items));
+      dispatch(setWishlist(res.data.wishlist.items));
 
       dispatch(setLoading(false));
     } catch (err) {
