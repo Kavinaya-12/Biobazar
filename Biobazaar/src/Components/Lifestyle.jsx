@@ -1,91 +1,221 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { addToCart } from '../redux/cartSlice';
-import { addToWishlist, removeFromWishlist, setWishlist } from '../redux/wishlistSlice';
-import { clearSearch } from '../redux/productSlice';
-import SearchBar from './SearchBar';
-import './collec.css';
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+import { api } from "../api";
+
+import { setCart } from "../redux/cartSlice";
+import { setWishlist } from "../redux/wishlistSlice";
+import { clearSearch } from "../redux/productSlice";
+
+import SearchBar from "./SearchBar";
+import "./collec.css";
 
 const Lifestyle = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { lifestyle, filteredProducts } = useSelector((state) => state.products);
-  const wishlist = useSelector((state) => state.wishlist.items);
+  const lifestyle = useSelector(
+    (state) => state.products.lifestyle
+  );
+
+  const filteredProducts = useSelector(
+    (state) => state.products.filteredProducts
+  );
+
+  const wishlist = useSelector(
+    (state) => state.wishlist.items
+  );
 
   const [addedToCart, setAddedToCart] = useState({});
 
-  const section = "Lifestyle";
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user ? user.id : null;
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     dispatch(clearSearch());
   }, [dispatch]);
 
   useEffect(() => {
-    if (userId) {
-      const savedWishlist = localStorage.getItem(`wishlist_${userId}`);
-      dispatch(setWishlist(savedWishlist ? JSON.parse(savedWishlist) : []));
-    }
-  }, [userId, dispatch]);
+    if (!userId) return;
 
-  useEffect(() => {
-    if (userId) {
-      localStorage.setItem(`wishlist_${userId}`, JSON.stringify(wishlist));
-    }
-  }, [wishlist, userId]);
+    fetchWishlist();
+    fetchCart();
+  }, [userId]);
 
-  const handleAddToCart = (product) => {
-    dispatch(addToCart(product));
-    setAddedToCart((prev) => ({ ...prev, [product._id || product.id]: true }));
+  const fetchWishlist = async () => {
+    try {
+      const res = await api.get(`/wishlist/${userId}`);
+      dispatch(setWishlist(res.data.wishlist.items));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleGoToCart = () => navigate('/cart');
+  const fetchCart = async () => {
+    try {
+      const res = await api.get(`/cart/${userId}`);
 
-  const handleWishlistToggle = (product) => {
-    const _key = `${section}_${product._id || product.id}`;
-    const isInWishlist = wishlist.some((i) => i._key === _key);
+      dispatch(setCart(res.data.cart.items));
 
-    if (isInWishlist) dispatch(removeFromWishlist(_key));
-    else dispatch(addToWishlist({ ...product, _key, section }));
+      const added = {};
+
+      res.data.cart.items.forEach((item) => {
+        added[item.productId._id] = true;
+      });
+
+      setAddedToCart(added);
+
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const getImageSrc = (product) =>
-    product.image.startsWith('http') ? product.image : `http://localhost:8000${product.image}`;
+  const handleAddToCart = async (product) => {
+    try {
 
-  const productsToShow = filteredProducts?.length ? filteredProducts : lifestyle;
+      const res = await api.post("/cart/add", {
+        userId,
+        productId: product._id,
+        quantity: 1,
+      });
+
+      dispatch(setCart(res.data.cart.items));
+
+      setAddedToCart((prev) => ({
+        ...prev,
+        [product._id]: true,
+      }));
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleGoToCart = () => {
+    navigate("/cart");
+  };
+
+  const handleWishlistToggle = async (product) => {
+    try {
+
+      const exists = wishlist.some(
+        (item) => item.productId._id === product._id
+      );
+
+      if (exists) {
+
+        const res = await api.post("/wishlist/remove", {
+          userId,
+          productId: product._id,
+        });
+
+        dispatch(setWishlist(res.data.wishlist.items));
+
+      } else {
+
+        const res = await api.post("/wishlist/add", {
+          userId,
+          productId: product._id,
+        });
+
+        dispatch(setWishlist(res.data.wishlist.items));
+
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const products =
+    filteredProducts.length > 0
+      ? filteredProducts
+      : lifestyle;
 
   return (
     <div className="lifestyle-container">
-  <h1 className="lifestyle-title">Organic Lifestyle</h1>
-  <SearchBar />
-  <div className="lifestyle-grid">
-    {productsToShow.map((product) => {
-      const _key = `${section}_${product._id || product.id}`;
-      const isInWishlist = wishlist.some((i) => i._key === _key);
-      return (
-        <div key={_key} className="lifestyle-card">
-          <img src={getImageSrc(product)} alt={product.name} className="collec-image" />
-          <h3 className="collec-name">{product.name}</h3>
-          <p className="collec-price">${product.price.toFixed(2)}</p>
 
-          {addedToCart[product._id || product.id] ? (
-            <button className="collec-btn" onClick={handleGoToCart}>Go to Cart</button>
-          ) : (
-            <button className="collec-btn" onClick={() => handleAddToCart(product)}>Add to Cart</button>
-          )}
+      <h1 className="lifestyle-title">
+        Organic Lifestyle Products
+      </h1>
 
-          <button className="wishlist-btn" onClick={() => handleWishlistToggle(product)}>
-            {isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
-          </button>
-        </div>
-      );
-    })}
-  </div>
-</div>
+      <SearchBar />
 
+      <div className="lifestyle-grid">
+
+        {products.map((product) => {
+
+          const image =
+            product.image &&
+            product.image.startsWith("http")
+              ? product.image
+              : `${api.defaults.baseURL}/${product.image}`;
+
+          const inWishlist = wishlist.some(
+            (item) => item.productId._id === product._id
+          );
+
+          return (
+
+            <div
+              key={product._id}
+              className="lifestyle-card"
+            >
+
+              <img
+                src={image}
+                alt={product.name}
+                className="collec-image"
+              />
+
+              <h3 className="collec-name">
+                {product.name}
+              </h3>
+
+              <p className="collec-price">
+                ₹{product.price}
+              </p>
+
+              {addedToCart[product._id] ? (
+
+                <button
+                  className="collec-btn"
+                  onClick={handleGoToCart}
+                >
+                  Go To Cart
+                </button>
+
+              ) : (
+
+                <button
+                  className="collec-btn"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  Add To Cart
+                </button>
+
+              )}
+
+              <button
+                className="wishlist-btn"
+                onClick={() =>
+                  handleWishlistToggle(product)
+                }
+              >
+                {inWishlist
+                  ? "Remove from Wishlist"
+                  : "Add to Wishlist"}
+              </button>
+
+            </div>
+
+          );
+
+        })}
+
+      </div>
+
+    </div>
   );
 };
 
