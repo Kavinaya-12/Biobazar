@@ -1,16 +1,62 @@
 const Profile = require("../models/profileModel");
 
-exports.createProfile = async (req, res) => {
+exports.getProfile = async (req, res) => {
+
   try {
-    const { userId, fullName, bio, location, profilePicture } = req.body;
 
-    const existingProfile = await Profile.findOne({ userId });
+    const { userId } = req.params;
 
-    if (existingProfile) {
+    const profile = await Profile.findOne({
+      userId,
+    });
+
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      profile,
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+};
+
+exports.createProfile = async (req, res) => {
+
+  try {
+
+    const {
+      userId,
+      fullName,
+      bio,
+      location,
+      profilePicture,
+    } = req.body;
+
+    const exists = await Profile.findOne({
+      userId,
+    });
+
+    if (exists) {
+
       return res.status(400).json({
         success: false,
         message: "Profile already exists",
       });
+
     }
 
     const profile = await Profile.create({
@@ -21,53 +67,33 @@ exports.createProfile = async (req, res) => {
       profilePicture,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       profile,
     });
-  } catch (err) {
-    console.error(err);
 
-    res.status(500).json({
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
       success: false,
-      message: err.message,
+      message: error.message,
     });
-  }
-};
 
-exports.getProfile = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const profile = await Profile.findOne({ userId });
-
-    if (!profile) {
-      return res.status(404).json({
-        success: false,
-        message: "Profile not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      profile,
-    });
-  } catch (err) {
-    console.error(err);
-
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
   }
 };
 
 exports.updateProfile = async (req, res) => {
+
   try {
+
     const { userId } = req.params;
 
     const updatedProfile = await Profile.findOneAndUpdate(
-      { userId },
+      {
+        userId,
+      },
       req.body,
       {
         new: true,
@@ -76,22 +102,27 @@ exports.updateProfile = async (req, res) => {
     );
 
     if (!updatedProfile) {
+
       return res.status(404).json({
         success: false,
         message: "Profile not found",
       });
+
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       profile: updatedProfile,
     });
-  } catch (err) {
-    console.error(err);
 
-    res.status(500).json({
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
       success: false,
-      message: err.message,
+      message: error.message,
     });
+
   }
 };
