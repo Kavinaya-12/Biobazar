@@ -1,7 +1,13 @@
 import axios from "axios";
 
+const baseURL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.MODE === "production"
+    ? "https://biobazaar.onrender.com"
+    : "http://localhost:8000");
+
 export const api = axios.create({
-  baseURL: "https://biobazar.onrender.com",
+  baseURL,
 });
 
 api.interceptors.request.use(
