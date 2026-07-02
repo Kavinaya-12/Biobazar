@@ -65,6 +65,7 @@ const Wishlist = () => {
     }
 
   };
+console.log("Wishlist =", wishlist);
 
   return (
     <div className="wishlist-container">
@@ -82,7 +83,7 @@ const Wishlist = () => {
           </p>
 
         ) : (
-
+console.log(wishlist);
           wishlist.map((item) => (
 
             <div
