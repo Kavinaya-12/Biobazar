@@ -1,140 +1,227 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import "./profile.css";
 import { api } from "../api";
 
 const Profile = () => {
-  const [profileData, setProfileData] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({});
+
+  const userId = localStorage.getItem("userId");
+  const userEmail = localStorage.getItem("userEmail");
+
   const [loading, setLoading] = useState(true);
 
-  // const user = JSON.parse(localStorage.getItem("user"));
-const userId = localStorage.getItem("userId");
-const userEmail = localStorage.getItem("userEmail");
-console.log("userId from localStorage:", userId);
+  const [profileData, setProfileData] = useState(null);
 
-useEffect(() => {
-  if (!userId) return; 
+  const [formData, setFormData] = useState({
+    fullName: "",
+    bio: "",
+    location: "",
+    profilePicture: "",
+  });
 
-  api.get(`/profile/${userId}`)
-    .then(res => {
-      setProfileData(res.data.profile);
-      setFormData(res.data.profile);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+
+    if (!userId) return;
+
+    fetchProfile();
+
+  }, []);
+
+  const fetchProfile = async () => {
+
+    try {
+
+      const res = await api.get(`/profile/${userId}`);
+
+      if (res.data.success) {
+
+        setProfileData(res.data.profile);
+
+        setFormData(res.data.profile);
+
+      }
+
+    } catch (err) {
+
+      console.log(err);
+
+    } finally {
+
       setLoading(false);
-    })
-    .catch(err => {
-      console.error("Error fetching profile:", err);
-      setLoading(false);
-    });
-}, [userId]);
 
+    }
 
-  const handleEditClick = () => setIsEditing(true);
+  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    setFormData({
+
+      ...formData,
+
+      [e.target.name]: e.target.value,
+
+    });
+
   };
 
   const handleSave = async () => {
+
     try {
-      const res = await api.put(
-        `/profile/${userId}`,
-        formData
-      );
-      setProfileData(res.data.profile);
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error updating profile:", error);
+
+      const res = await api.put(`/profile/${userId}`, formData);
+
+      if (res.data.success) {
+
+        setProfileData(res.data.profile);
+
+        setFormData(res.data.profile);
+
+        setIsEditing(false);
+
+        alert("Profile Updated Successfully");
+
+      }
+
+    } catch (err) {
+
+      console.log(err);
+
+      alert("Unable to update profile");
+
     }
+
   };
 
-  const handleCancel = () => {
-    setFormData(profileData);
-    setIsEditing(false);
-  };
+  if (loading)
 
-  if (loading) return <p>Loading profile...</p>;
-  if (!profileData) return <p>No profile found for this user.</p>;
+    return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
+
+  if (!profileData)
+
+    return <h2 style={{ textAlign: "center" }}>Profile Not Found</h2>;
 
   return (
     <div className="profile-container">
+
       <div className="profile-content">
-        <h1>{profileData.fullName}'s Profile</h1>
+
+        <h1>{profileData.fullName}</h1>
+
         <img
           src={
-            profileData.profilePicture ||
-            "https://cdn3.iconfinder.com/data/icons/avatars-flat/33/woman_9-512.png"
+            profileData.profilePicture
+              ? profileData.profilePicture
+              : "https://cdn3.iconfinder.com/data/icons/avatars-flat/33/woman_9-512.png"
           }
-          alt={`${profileData.fullName}'s Profile`}
+          alt="profile"
         />
-        <p>Email: {userEmail} </p>
-        <p>Bio: {profileData.bio}</p>
-        <p>Location: {profileData.location}</p>
+
+        <p>
+
+          <strong>Email :</strong> {userEmail}
+
+        </p>
+
+        <p>
+
+          <strong>Bio :</strong> {profileData.bio}
+
+        </p>
+
+        <p>
+
+          <strong>Location :</strong> {profileData.location}
+
+        </p>
 
         {!isEditing ? (
-          <button className="edit-button" onClick={handleEditClick}>
+
+          <button
+            className="edit-button"
+            onClick={() => setIsEditing(true)}
+          >
             Edit Profile
           </button>
+
         ) : (
-          <div>
-            <h2>Edit Profile</h2>
-            <form>
-              <label>
-                Full Name:
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                />
-              </label>
-              <label>
-                Bio:
-                <input
-                  type="text"
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleChange}
-                />
-              </label>
-              <label>
-                Location:
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                />
-              </label>
-              <label>
-                Profile Picture URL:
-                <input
-                  type="text"
-                  name="profilePicture"
-                  value={formData.profilePicture || ""}
-                  onChange={handleChange}
-                />
-              </label>
-              <br />
-              <button
-                type="button"
-                className="edit-button"
-                onClick={handleSave}
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                className="edit-button"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-            </form>
-          </div>
+
+          <>
+
+            <label>
+
+              Full Name
+
+              <input
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+              />
+
+            </label>
+
+            <label>
+
+              Bio
+
+              <input
+                name="bio"
+                value={formData.bio}
+                onChange={handleChange}
+              />
+
+            </label>
+
+            <label>
+
+              Location
+
+              <input
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+              />
+
+            </label>
+
+            <label>
+
+              Profile Picture URL
+
+              <input
+                name="profilePicture"
+                value={formData.profilePicture || ""}
+                onChange={handleChange}
+              />
+
+            </label>
+
+            <br />
+
+            <button
+              className="edit-button"
+              onClick={handleSave}
+            >
+              Save
+            </button>
+
+            <button
+              className="edit-button"
+              onClick={() => {
+                setFormData(profileData);
+                setIsEditing(false);
+              }}
+            >
+              Cancel
+            </button>
+
+          </>
+
         )}
+
       </div>
+
     </div>
   );
 };

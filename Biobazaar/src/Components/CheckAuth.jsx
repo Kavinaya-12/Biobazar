@@ -7,23 +7,37 @@ function CheckAuth({ children }) {
 
   const isAuthenticated = Boolean(token);
 
-  const protectedRoutes = ["/cart", "/profile", "/sell", "/wishlist"];
+  const protectedRoutes = [
+    "/cart",
+    "/profile",
+    "/sell",
+    "/wishlist",
+    "/collections",
+    "/aboutus",
+    "/search-results",
+  ];
+
+  const authRoutes = [
+    "/login",
+    "/signup",
+  ];
 
   if (
     !isAuthenticated &&
-    protectedRoutes.some((path) => location.pathname.startsWith(path))
+    protectedRoutes.some((route) =>
+      location.pathname.startsWith(route)
+    )
   ) {
     return <Navigate to="/login" replace />;
   }
-
   if (
     isAuthenticated &&
-    ["/login", "/signup"].includes(location.pathname)
+    authRoutes.includes(location.pathname)
   ) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/collections" replace />;
   }
 
-  return <>{children}</>;
+  return children;
 }
 
 export default CheckAuth;

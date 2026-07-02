@@ -1,55 +1,126 @@
 import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { removeFromWishlist, setWishlist } from "../redux/wishlistSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setWishlist,
+  removeFromWishlist,
+} from "../redux/wishlistSlice";
+import { api } from "../api";
 import "./wishlist.css";
 
 const Wishlist = () => {
+
   const dispatch = useDispatch();
-  const wishlist = useSelector((state) => state.wishlist.items);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userId = user ? user.id : null;
+  const wishlist = useSelector(
+    (state) => state.wishlist.items
+  );
+
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
+
     if (userId) {
-      const saved = localStorage.getItem(`wishlist_${userId}`);
-      if (saved) dispatch(setWishlist(JSON.parse(saved)));
+      fetchWishlist();
     }
-  }, [userId, dispatch]);
 
-  useEffect(() => {
-    if (userId) localStorage.setItem(`wishlist_${userId}`, JSON.stringify(wishlist));
-  }, [wishlist, userId]);
+  }, []);
 
-  const handleRemove = (_key) => {
-    dispatch(removeFromWishlist(_key));
+  const fetchWishlist = async () => {
+
+    try {
+
+      const res = await api.get(`/wishlist/${userId}`);
+
+      if (res.data.success) {
+
+        dispatch(
+          setWishlist(res.data.wishlist.items)
+        );
+
+      }
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+
+  };
+
+  const handleRemove = async (productId) => {
+
+    try {
+
+      await api.post("/wishlist/remove", {
+        userId,
+        productId,
+      });
+
+      dispatch(removeFromWishlist(productId));
+
+    } catch (err) {
+
+      console.log(err);
+
+    }
+
   };
 
   return (
     <div className="wishlist-container">
-      <h1 className="wishlist-title"> My Wishlist</h1>
+
+      <h1 className="wishlist-title">
+        My Wishlist
+      </h1>
+
       <div className="wishlist-grid">
+
         {wishlist.length === 0 ? (
-          <p className="wishlist-empty">✨ Your wishlist is empty. Start adding your favorites!</p>
+
+          <p className="wishlist-empty">
+            Your wishlist is empty.
+          </p>
+
         ) : (
+
           wishlist.map((item) => (
-            <div key={item._key} className="wishlist-card">
-              {item.image ? (
-                <img src={item.image} alt={item.name} className="wishlist-image" />
-              ) : (
-                <div className="wishlist-no-image">No Image</div>
-              )}
-              <h3 className="wishlist-name">{item.name}</h3>
+
+            <div
+              key={item.productId._id}
+              className="wishlist-card"
+            >
+
+              <img
+                src={item.productId.image}
+                alt={item.productId.name}
+                className="wishlist-image"
+              />
+
+              <h3 className="wishlist-name">
+                {item.productId.name}
+              </h3>
+
               <p className="wishlist-price">
-                {item.price ? `$${item.price.toFixed(2)}` : "Price not available"}
+                ₹{item.productId.price}
               </p>
-              <button className="wishlist-remove-btn" onClick={() => handleRemove(item._key)}>
-                 Remove
+
+              <button
+                className="wishlist-remove-btn"
+                onClick={() =>
+                  handleRemove(item.productId._id)
+                }
+              >
+                Remove
               </button>
+
             </div>
+
           ))
+
         )}
+
       </div>
+
     </div>
   );
 };

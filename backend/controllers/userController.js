@@ -1,16 +1,19 @@
 const User = require("../models/userModel");
+const Profile = require("../models/profileModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Profile = require("../models/profileModel");
-
 
 exports.createUser = async (req, res) => {
-  const { username, email, password } = req.body;
-
   try {
+    const { username, email, password } = req.body;
+
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ success: false, error: "Email already registered" });
+      return res.status(400).json({
+        success: false,
+        error: "Email already registered",
+      });
     }
 
     const newUser = new User({
@@ -18,6 +21,7 @@ exports.createUser = async (req, res) => {
       email,
       password,
     });
+
     await newUser.save();
 
     const newProfile = new Profile({
@@ -27,76 +31,158 @@ exports.createUser = async (req, res) => {
       location: "",
       profilePicture: "",
     });
+
     await newProfile.save();
+
+    // Create JWT Immediately
+    const token = jwt.sign(
+      {
+        user_id: newUser._id,
+        email: newUser.email,
+      },
+      process.env.JWT_SECRET || "secret_token",
+      {
+        expiresIn: "1h",
+      }
+    );
 
     return res.status(201).json({
       success: true,
-      message: "User created successfully",
+      message: "User Registered Successfully",
+      token,
       userId: newUser._id,
+      email: newUser.email,
     });
+
   } catch (error) {
-    console.error("Error in createUser:", error);
-    return res.status(500).json({ success: false, error: error.message || "Internal server error" });
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 
+
 exports.getUser = async (req, res) => {
   try {
-    const users = await User.find().select("-password"); 
-    res.status(200).json({ success: true, users });
+
+    const users = await User.find().select("-password");
+
+    return res.status(200).json({
+      success: true,
+      users,
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+
   }
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
 
   try {
+
+    const { email, password } = req.body;
+
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(400).json({ success: false, error: "No user found with this email" });
+
+      return res.status(400).json({
+        success: false,
+        error: "No user found with this email",
+      });
+
     }
 
     const isMatched = await bcrypt.compare(password, user.password);
+
     if (!isMatched) {
-      return res.status(400).json({ success: false, error: "Incorrect password" });
+
+      return res.status(400).json({
+        success: false,
+        error: "Incorrect password",
+      });
+
     }
 
     const token = jwt.sign(
-      { user_id: user._id, email: user.email },
-      process.env.JWT_SECRET || "secret_token", 
-      { expiresIn: "1h" }
+      {
+        user_id: user._id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET || "secret_token",
+      {
+        expiresIn: "1h",
+      }
     );
 
-   return res.status(200).json({
-  success: true,
-  message: "Login successful",
-  token,
-  userId: user._id.toString(),
-  username: user.username,
-  email: user.email,
-});
+    return res.status(200).json({
+      success: true,
+      message: "Login Successful",
+      token,
+      userId: user._id,
+      email: user.email,
+    });
+
   } catch (error) {
-    console.error("Error in login:", error);
-    return res.status(500).json({ success: false, error: error.message });
+
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+
   }
+
 };
 
 exports.logout = async (req, res) => {
-  return res.status(200).json({ success: true, message: "Logged out successfully" });
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged Out Successfully",
+  });
+
 };
 
-exports.delete = async (req, res) => {
-  const { email } = req.body;
+exports.delete = async (req, res) {
 
   try {
+
+    const { email } = req.body;
+
     const deletedUser = await User.findOneAndDelete({ email });
+
     if (!deletedUser) {
-      return res.status(404).json({ success: false, message: "User not found" });
+
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
+
     }
-    res.status(200).json({ success: true, message: "User deleted successfully" });
+
+    return res.status(200).json({
+      success: true,
+      message: "User Deleted Successfully",
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+
   }
+
 };

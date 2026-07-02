@@ -2,37 +2,39 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const path = require("path");
 
 const userRoutes = require("./routes/userRoutes");
 const profileRoutes = require("./routes/profileRoutes");
+const cartRoutes = require("./routes/cartRoutes");
+const wishlistRoutes = require("./routes/wishlistRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 dotenv.config();
+
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+}));
+
 app.use(express.json());
 
 app.use("/user", userRoutes);
 app.use("/profile", profileRoutes);
-
-if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "dist"); // Vite build folder
-  app.use(express.static(frontendPath));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(frontendPath, "index.html"));
-  });
-}
-
-const PORT = process.env.PORT || 8000;
-
-console.log("Mongo URI:", process.env.MONGO_URI);
-
+app.use("/cart", cartRoutes);
+app.use("/wishlist", wishlistRoutes);
+app.use("/products", productRoutes);
+app.use("/uploads", express.static("uploads")); 
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log(" Connected to database");
-    app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
-  })
-  .catch((err) => console.log("Failed to connect:", err));
+.connect(process.env.MONGO_URI)
+.then(() => {
+    console.log("MongoDB Connected");
+
+    app.listen(process.env.PORT || 8000, () => {
+        console.log("Server Running");
+    });
+})
+.catch(err=>{
+    console.log(err);
+});

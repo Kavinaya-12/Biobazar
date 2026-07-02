@@ -1,36 +1,51 @@
-const jwt = require('jsonwebtoken');
-const multer = require('multer');
+const jwt = require("jsonwebtoken");
+const multer = require("multer");
 
+// Multer Storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); 
+    cb(null, "uploads/");
   },
+
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname); 
-  }
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
+// JWT Authentication Middleware
 const authenticate = (req, res, next) => {
-  const token = req.header('Authorization')?.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ error: 'No token, authorization denied' });
-  }
-
   try {
-    const decoded = jwt.verify(token, 'your_jwt_secret'); // Replace 'your_jwt_secret' with your actual JWT secret
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Authorization token missing",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "secret_token"
+    );
+
     req.user = decoded;
+
     next();
-  } catch (err) {
-    return res.status(401).json({ error: 'Invalid token' });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or Expired Token",
+    });
   }
 };
 
 module.exports = {
   authenticate,
-  upload
+  upload,
 };
-

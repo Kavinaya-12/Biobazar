@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
-import { loginSuccess } from "../redux/authSlice";
 import "./login.css";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { loginSuccess } from "../redux/authSlice";
 import { api } from "../api";
 
 const Login = () => {
@@ -23,20 +23,33 @@ const Login = () => {
 
       const { token, userId } = response.data;
 
-      // Save in Redux + LocalStorage
       dispatch(loginSuccess({ token, userId }));
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("userEmail", email);
+
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userEmail");
+
+        alert("Session expired. Please login again.");
+
+        navigate("/login");
+      }, 60 * 60 * 1000);
 
       alert("Successfully Logged In!");
 
-      // Redirect
       navigate("/collections");
+
     } catch (error) {
       console.error(error);
 
       if (error.response?.status === 400) {
-        alert(error.response.data.error);
+        alert("Invalid Email or Password");
       } else {
-        alert("Login Failed");
+        alert("Something went wrong.");
       }
     }
   };
@@ -50,23 +63,24 @@ const Login = () => {
       </div>
 
       <div className="login-box">
-        <h1>LOGIN</h1>
+        <h1>Login</h1>
 
         <form onSubmit={handleSubmit}>
+          <label>Email:</label>
 
-          <label>Email</label>
           <input
             type="email"
-            placeholder="Enter Email"
+            placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
 
-          <label>Password</label>
+          <label>Password:</label>
+
           <input
             type="password"
-            placeholder="Enter Password"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -75,14 +89,11 @@ const Login = () => {
           <button className="login-btn" type="submit">
             Login
           </button>
-
         </form>
 
         <p className="login-signup-link">
-          Don't have an account?{" "}
-          <Link to="/signup">Create one</Link>
+          Don't have an account? <a href="/signup">Create one</a>
         </p>
-
       </div>
     </div>
   );

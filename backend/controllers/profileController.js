@@ -1,65 +1,97 @@
-const mongoose = require("mongoose");
 const Profile = require("../models/profileModel");
 
-// Create profile
 exports.createProfile = async (req, res) => {
-  const { userId, fullName, bio, location, profilePicture } = req.body;
   try {
-    const newProfile = new Profile({
+    const { userId, fullName, bio, location, profilePicture } = req.body;
+
+    const existingProfile = await Profile.findOne({ userId });
+
+    if (existingProfile) {
+      return res.status(400).json({
+        success: false,
+        message: "Profile already exists",
+      });
+    }
+
+    const profile = await Profile.create({
       userId,
       fullName,
       bio,
       location,
-      profilePicture
+      profilePicture,
     });
-    await newProfile.save();
-    res.status(200).json({ message: "Profile created successfully", profile: newProfile });
+
+    res.status(201).json({
+      success: true,
+      profile,
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
-// Get profile
 exports.getProfile = async (req, res) => {
-  const { userId } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ error: "Invalid user ID" });
-  }
-
   try {
+    const { userId } = req.params;
+
     const profile = await Profile.findOne({ userId });
+
     if (!profile) {
-      return res.status(404).json({ error: "Profile not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
     }
-    res.status(200).json({ profile });
+
+    res.status(200).json({
+      success: true,
+      profile,
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
-// Update profile
 exports.updateProfile = async (req, res) => {
-  const { userId } = req.params;
-  const { fullName, bio, location, profilePicture } = req.body;
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ error: "Invalid user ID" });
-  }
-
   try {
-    const profile = await Profile.findOneAndUpdate(
+    const { userId } = req.params;
+
+    const updatedProfile = await Profile.findOneAndUpdate(
       { userId },
-      { fullName, bio, location, profilePicture },
-      { new: true, runValidators: true }
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
     );
 
-    if (!profile) {
-      return res.status(404).json({ error: "Profile not found" });
+    if (!updatedProfile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
     }
 
-    res.status(200).json({ message: "Profile updated successfully", profile });
+    res.status(200).json({
+      success: true,
+      profile: updatedProfile,
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
