@@ -22,12 +22,12 @@ const Login = () => {
     e.preventDefault();
 
     if (!validateEmail(email.trim())) {
-      toast.warning("Please enter a valid email address.");
+      toast("Please enter a valid email address.");
       return;
     }
 
     if (password.length < 6) {
-      toast.warning("Password must be at least 6 characters.");
+      toast("Password must be at least 6 characters.");
       return;
     }
 

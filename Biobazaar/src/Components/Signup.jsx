@@ -26,45 +26,39 @@ const Signup = () => {
         event.preventDefault();
 
         if (username.trim().length < 3) {
-            toast.warning("Username must be at least 3 characters.");
+            toast("Username must be at least 3 characters.");
             return;
         }
 
         if (!validateEmail(email.trim())) {
-            toast.warning("Please enter a valid email address.");
+            toast("Please enter a valid email address.");
             return;
         }
 
         if (password.length < 6) {
-            toast.warning("Password must be at least 6 characters.");
+            toast("Password must be at least 6 characters.");
             return;
         }
 
         if (password !== confirmPassword) {
-            toast.warning("Password and confirm password must match.");
+            toast("Password and confirm password must match.");
             return;
         }
 
         setLoading(true);
 
         try {
-
-            // STEP 1 : Create User
             await api.post("/user", {
                 username,
                 email,
                 password,
             });
-
-            // STEP 2 : Automatically Login
             const loginResponse = await api.post("/user/login", {
                 email,
                 password,
             });
 
             const { token, userId } = loginResponse.data;
-
-            // STEP 3 : Update Redux
             dispatch(
                 loginSuccess({
                     token,
@@ -72,16 +66,11 @@ const Signup = () => {
                     email,
                 })
             );
-
-            // STEP 4 : Save in Local Storage
             localStorage.setItem("token", token);
             localStorage.setItem("userId", userId);
             localStorage.setItem("userEmail", email);
-
-            // STEP 5 : Success Message
             toast.success("Account Created Successfully!");
 
-            // STEP 6 : Redirect
             navigate("/collections");
 
         } catch (error) {

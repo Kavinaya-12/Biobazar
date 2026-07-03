@@ -38,22 +38,22 @@ const Sell = () => {
     e.preventDefault();
 
     if (name.trim().length < 3) {
-      toast.warning('Name must be at least 3 characters.');
+      toast('Name must be at least 3 characters.');
       return;
     }
 
     if (!price || Number(price) <= 0) {
-      toast.warning('Price must be greater than 0.');
+      toast('Price must be greater than 0.');
       return;
     }
 
     if (description.trim().length < 10) {
-      toast.warning('Description must be at least 10 characters.');
+      toast('Description must be at least 10 characters.');
       return;
     }
 
     if (!image) {
-      toast.warning('Please select an image');
+      toast('Please select an image');
       return;
     }
 

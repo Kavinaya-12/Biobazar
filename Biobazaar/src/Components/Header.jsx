@@ -79,7 +79,7 @@ const Header = () => {
                 className="dropdown-toggle"
                 onClick={toggleDropdown}
               >
-                Me ▼
+                Me 
               </span>
 
               <div
