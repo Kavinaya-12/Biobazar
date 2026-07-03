@@ -5,7 +5,7 @@ import { logout } from "./redux/authSlice";
 const baseURL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.MODE === "production"
-    ? "https://biobazaar-backend.onrender.com"
+    ? "https://biobazar.onrender.com"
     : "http://localhost:8000");
 
 console.debug("API baseURL:", baseURL);
