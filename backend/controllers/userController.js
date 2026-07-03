@@ -195,7 +195,7 @@ exports.logout = async (req, res) => {
 
 };
 
-exports.delete = async (req, res) {
+exports.delete = async (req, res) => {
 
   try {
 
