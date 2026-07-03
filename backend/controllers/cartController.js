@@ -1,8 +1,26 @@
+const mongoose = require("mongoose");
 const Cart = require("../models/cartModel");
+
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+const isPositiveInteger = (value) => Number.isInteger(value) && value > 0;
 
 exports.getCart = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    if (!isValidObjectId(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to access this cart",
+      });
+    }
 
     let cart = await Cart.findOne({ userId })
       .populate("items.productId");
@@ -32,6 +50,28 @@ exports.addItemToCart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
 
+    if (!isValidObjectId(userId) || !isValidObjectId(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid user ID and product ID are required",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to modify this cart",
+      });
+    }
+
+    const qty = quantity === undefined || quantity === null ? 1 : Number(quantity);
+    if (!isPositiveInteger(qty)) {
+      return res.status(400).json({
+        success: false,
+        message: "Quantity must be a positive integer",
+      });
+    }
+
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
@@ -46,11 +86,11 @@ exports.addItemToCart = async (req, res) => {
     );
 
     if (index > -1) {
-      cart.items[index].quantity += quantity || 1;
+      cart.items[index].quantity += qty;
     } else {
       cart.items.push({
         productId,
-        quantity: quantity || 1,
+        quantity: qty,
       });
     }
 
@@ -78,6 +118,20 @@ exports.removeItemFromCart = async (req, res) => {
   try {
 
     const { userId, productId } = req.body;
+
+    if (!isValidObjectId(userId) || !isValidObjectId(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid user ID and product ID are required",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to modify this cart",
+      });
+    }
 
     const cart = await Cart.findOne({ userId });
 
@@ -119,6 +173,28 @@ exports.updateQuantity = async (req, res) => {
 
     const { userId, productId, quantity } = req.body;
 
+    if (!isValidObjectId(userId) || !isValidObjectId(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid user ID and product ID are required",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to modify this cart",
+      });
+    }
+
+    const qty = Number(quantity);
+    if (!isPositiveInteger(qty)) {
+      return res.status(400).json({
+        success: false,
+        message: "Quantity must be a positive integer",
+      });
+    }
+
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
@@ -139,7 +215,7 @@ exports.updateQuantity = async (req, res) => {
       });
     }
 
-    item.quantity = quantity;
+    item.quantity = qty;
 
     await cart.save();
 
@@ -167,6 +243,20 @@ exports.clearCart = async (req, res) => {
   try {
 
     const { userId } = req.body;
+
+    if (!isValidObjectId(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid user ID is required",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to clear this cart",
+      });
+    }
 
     await Cart.findOneAndDelete({
       userId,

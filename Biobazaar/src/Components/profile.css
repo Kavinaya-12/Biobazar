@@ -1,15 +1,11 @@
-body {
-  background: linear-gradient(135deg, #d8f3dc, #f1faee);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
-
 .profile-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 90vh;
+  min-height: 100vh;
   padding: 20px;
+  background: linear-gradient(135deg, #d8f3dc, #f1faee);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .profile-content {

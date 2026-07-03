@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
 import { api } from "../api";
-
 import { setCart } from "../redux/cartSlice";
 import { setWishlist } from "../redux/wishlistSlice";
 import { clearSearch } from "../redux/productSlice";
-
 import SearchBar from "./SearchBar";
 import "./collec.css";
 
 const Lifestyle = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const lifestyle = useSelector(
     (state) => state.products.lifestyle
   );
@@ -26,8 +22,8 @@ const Lifestyle = () => {
   const wishlist = useSelector(
     (state) => state.wishlist.items
   );
-  const userId = useSelector((state) => state.auth.userId);
 
+  const userId = useSelector((state) => state.auth.userId);
   const [addedToCart, setAddedToCart] = useState({});
 
   useEffect(() => {
@@ -53,17 +49,12 @@ const Lifestyle = () => {
   const fetchCart = async () => {
     try {
       const res = await api.get(`/cart/${userId}`);
-
       dispatch(setCart(res.data.cart.items));
-
       const added = {};
-
       res.data.cart.items.forEach((item) => {
         added[item.productId._id] = true;
       });
-
       setAddedToCart(added);
-
     } catch (err) {
       console.error(err);
     }
@@ -71,20 +62,16 @@ const Lifestyle = () => {
 
   const handleAddToCart = async (product) => {
     try {
-
       const res = await api.post("/cart/add", {
         userId,
         productId: product._id,
         quantity: 1,
       });
-
       dispatch(setCart(res.data.cart.items));
-
       setAddedToCart((prev) => ({
         ...prev,
         [product._id]: true,
       }));
-
     } catch (err) {
       console.error(err);
     }
@@ -99,7 +86,6 @@ const Lifestyle = () => {
       const exists = wishlist.some(
         (item) => item.productId._id === product._id
       );
-
       if (exists) {
         const res = await api.post("/wishlist/remove", {
           userId,
@@ -121,7 +107,7 @@ const Lifestyle = () => {
       }
     } catch (err) {
       console.error("Wishlist error:", err);
-      alert(err.response?.data?.message || "Error updating wishlist");
+      toast.error(err.response?.data?.message || "Error updating wishlist");
     }
   };
 

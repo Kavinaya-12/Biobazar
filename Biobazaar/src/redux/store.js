@@ -2,15 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import cartReducer from './cartSlice';
 import productReducer from './productSlice';
 import wishlistReducer from './wishlistSlice';
-import authReducer from './authSlice'
-import searchReducer from './searchSlice'
+import authReducer from './authSlice';
 const store = configureStore({
   reducer: {
     cart: cartReducer,
-    products:productReducer,
-    wishlist:wishlistReducer,
+    products: productReducer,
+    wishlist: wishlistReducer,
     auth: authReducer,
-    search: searchReducer,
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setWishlist,
@@ -7,10 +7,12 @@ import {
   setError,
 } from "../redux/wishlistSlice";
 import { api } from "../api";
+import { toast } from "react-hot-toast";
 import "./wishlist.css";
 
 const Wishlist = () => {
   const dispatch = useDispatch();
+  const [removingId, setRemovingId] = useState(null);
 
   const { items, loading } = useSelector((state) => state.wishlist);
   const userId = useSelector((state) => state.auth.userId);
@@ -28,25 +30,26 @@ const Wishlist = () => {
       const res = await api.get(`/wishlist/${userId}`);
 
       dispatch(setWishlist(res.data.wishlist.items));
-
-      dispatch(setLoading(false));
     } catch (err) {
-      dispatch(setLoading(false));
       dispatch(setError(err.message));
-      console.log(err);
+      toast.error(err.response?.data?.message || "Unable to load wishlist");
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
   const handleRemove = async (productId) => {
     try {
+      setRemovingId(productId);
       await api.post("/wishlist/remove", {
         userId,
         productId,
       });
-
       dispatch(removeFromWishlist(productId));
     } catch (err) {
-      console.log(err);
+      toast.error(err.response?.data?.message || "Unable to remove from wishlist");
+    } finally {
+      setRemovingId(null);
     }
   };
 
@@ -61,31 +64,38 @@ const Wishlist = () => {
         {items.length === 0 ? (
           <p>Your Wishlist is Empty</p>
         ) : (
-          items.map((item) => (
-            <div
-              className="wishlist-card"
-              key={item.productId._id}
-            >
-              <img
-                src={item.productId.image}
-                alt={item.productId.name}
-                className="wishlist-image"
-              />
+          items.map((item) => {
+            const product = item.productId || {};
+            const image =
+              product.image && product.image.trim()
+                ? product.image
+                : "https://via.placeholder.com/300x300?text=No+Image";
 
-              <h3>{item.productId.name}</h3>
-
-              <p>₹ {item.productId.price}</p>
-
-              <button
-                className="wishlist-remove-btn"
-                onClick={() =>
-                  handleRemove(item.productId._id)
-                }
+            return (
+              <div
+                className="wishlist-card"
+                key={product._id || product.id}
               >
-                Remove
-              </button>
-            </div>
-          ))
+                <img
+                  src={image}
+                  alt={product.name || "Wishlist product"}
+                  className="wishlist-image"
+                />
+
+                <h3>{product.name}</h3>
+
+                <p>₹ {product.price}</p>
+
+                <button
+                  className="wishlist-remove-btn"
+                  onClick={() => handleRemove(product._id)}
+                  disabled={removingId === product._id}
+                >
+                  {removingId === product._id ? "Removing..." : "Remove"}
+                </button>
+              </div>
+            );
+          })
         )}
       </div>
     </div>

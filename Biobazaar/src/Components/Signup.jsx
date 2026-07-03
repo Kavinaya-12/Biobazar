@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { toast } from "react-hot-toast";
 import { loginSuccess } from "../redux/authSlice";
 import { api } from "../api";
 import "./signup.css";
@@ -13,10 +14,38 @@ const Signup = () => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const validateEmail = (value) => {
+        return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+    };
 
     const handleSubmit = async (event) => {
 
         event.preventDefault();
+
+        if (username.trim().length < 3) {
+            toast.warning("Username must be at least 3 characters.");
+            return;
+        }
+
+        if (!validateEmail(email.trim())) {
+            toast.warning("Please enter a valid email address.");
+            return;
+        }
+
+        if (password.length < 6) {
+            toast.warning("Password must be at least 6 characters.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            toast.warning("Password and confirm password must match.");
+            return;
+        }
+
+        setLoading(true);
 
         try {
 
@@ -40,6 +69,7 @@ const Signup = () => {
                 loginSuccess({
                     token,
                     userId,
+                    email,
                 })
             );
 
@@ -49,7 +79,7 @@ const Signup = () => {
             localStorage.setItem("userEmail", email);
 
             // STEP 5 : Success Message
-            alert("Account Created Successfully!");
+            toast.success("Account Created Successfully!");
 
             // STEP 6 : Redirect
             navigate("/collections");
@@ -59,11 +89,13 @@ const Signup = () => {
             console.error(error);
 
             if (error.response?.data?.error) {
-                alert(error.response.data.error);
+                toast.error(error.response.data.error);
             } else {
-                alert("Signup Failed");
+                toast.error("Signup Failed");
             }
 
+        } finally {
+            setLoading(false);
         }
 
     };
@@ -118,11 +150,22 @@ const Signup = () => {
                         required
                     />
 
+                    <label>Confirm Password:</label>
+
+                    <input
+                        type="password"
+                        placeholder="Confirm your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                    />
+
                     <button
                         type="submit"
                         className="explore-btn"
+                        disabled={loading}
                     >
-                        Signup
+                        {loading ? "Creating Account..." : "Signup"}
                     </button>
 
                 </form>

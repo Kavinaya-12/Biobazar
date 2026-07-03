@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-hot-toast";
 import { api } from "../api";
-
 import { setCart } from "../redux/cartSlice";
 import { setWishlist } from "../redux/wishlistSlice";
 import { clearSearch } from "../redux/productSlice";
-
 import SearchBar from "./SearchBar";
 import "./collec.css";
 
@@ -118,7 +116,7 @@ const Household = () => {
       }
     } catch (err) {
       console.error("Wishlist error:", err);
-      alert(err.response?.data?.message || "Error updating wishlist");
+      toast.error(err.response?.data?.message || "Error updating wishlist");
     }
   };
 
@@ -199,5 +197,4 @@ const Household = () => {
     </div>
   );
 };
-
 export default Household;

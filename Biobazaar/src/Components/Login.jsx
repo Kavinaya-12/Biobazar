@@ -2,18 +2,36 @@ import React, { useState } from "react";
 import "./login.css";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { loginSuccess } from "../redux/authSlice";
 import { api } from "../api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const validateEmail = (value) => {
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateEmail(email.trim())) {
+      toast.warning("Please enter a valid email address.");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.warning("Password must be at least 6 characters.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await api.post("/user/login", {
@@ -23,13 +41,13 @@ const Login = () => {
 
       const { token, userId } = response.data;
 
-      dispatch(loginSuccess({ token, userId }));
+      dispatch(loginSuccess({ token, userId, email }));
 
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userId);
       localStorage.setItem("userEmail", email);
 
-      alert("Successfully Logged In!");
+      toast.success("Successfully Logged In!");
 
       navigate("/collections");
 
@@ -37,10 +55,12 @@ const Login = () => {
       console.error(error);
 
       if (error.response?.status === 400) {
-        alert("Invalid Email or Password");
+        toast.error("Invalid Email or Password");
       } else {
-        alert("Something went wrong.");
+        toast.error("Something went wrong.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,8 +96,8 @@ const Login = () => {
             required
           />
 
-          <button className="login-btn" type="submit">
-            Login
+          <button className="login-btn" type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

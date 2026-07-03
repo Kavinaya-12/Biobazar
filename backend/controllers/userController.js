@@ -3,22 +3,48 @@ const Profile = require("../models/profileModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const isValidEmail = (email) =>
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+
 exports.createUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
+    if (!username || !username.trim() || !email || !email.trim() || !password) {
       return res.status(400).json({
+        success: false,
+        error: "Username, email, and password are required",
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid email address",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedUsername = username.trim();
+    const existingUserByEmail = await User.findOne({ email: normalizedEmail });
+    if (existingUserByEmail) {
+      return res.status(409).json({
         success: false,
         error: "Email already registered",
       });
     }
 
+    const existingUserByUsername = await User.findOne({ username: normalizedUsername });
+    if (existingUserByUsername) {
+      return res.status(409).json({
+        success: false,
+        error: "Username already taken",
+      });
+    }
+
     const newUser = new User({
-      username,
-      email,
+      username: normalizedUsername,
+      email: normalizedEmail,
       password,
     });
 
@@ -91,11 +117,26 @@ exports.login = async (req, res) => {
 
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!email || !email.trim() || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Email and password are required",
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid email address",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
 
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         error: "No user found with this email",
       });
@@ -106,7 +147,7 @@ exports.login = async (req, res) => {
 
     if (!isMatched) {
 
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         error: "Incorrect password",
       });

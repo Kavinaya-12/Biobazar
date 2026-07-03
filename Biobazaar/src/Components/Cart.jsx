@@ -1,10 +1,7 @@
-import React, { useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-hot-toast";
 import {
-  incrementQuantity,
-  decrementQuantity,
-  removeFromCart,
   clearCart,
   setCart,
 } from "../redux/cartSlice";
@@ -13,6 +10,8 @@ import "./cart.css";
 
 const CartPage = () => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(null);
 
   const cartItems = useSelector((state) => state.cart.items);
   const userId = useSelector((state) => state.auth.userId);
@@ -25,66 +24,87 @@ const CartPage = () => {
 
   const loadCart = async () => {
     try {
+      setLoading(true);
       const res = await api.get(`/cart/${userId}`);
 
       if (res.data.success) {
         dispatch(setCart(res.data.cart.items));
       }
     } catch (err) {
-      console.log(err);
+      toast.error(err.response?.data?.message || "Unable to load cart");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleIncrement = async (productId, quantity) => {
     try {
-      await api.put("/cart/quantity", {
+      setActionLoading(productId);
+      const res = await api.put("/cart/quantity", {
         userId,
         productId,
         quantity: quantity + 1,
       });
 
-      loadCart();
+      if (res.data.success) {
+        dispatch(setCart(res.data.cart.items));
+      } else {
+        toast.error(res.data.message || "Unable to update cart quantity.");
+      }
     } catch (err) {
-      console.log(err);
+      toast.error(err.response?.data?.message || "Unable to update cart quantity.");
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleDecrement = async (productId, quantity) => {
-    try {
-      if (quantity <= 1) {
-        await api.post("/cart/remove", {
-          userId,
-          productId,
-        });
-      } else {
-        await api.put("/cart/quantity", {
-          userId,
-          productId,
-          quantity: quantity - 1,
-        });
-      }
+    if (quantity <= 1) {
+      return;
+    }
 
-      loadCart();
+    try {
+      setActionLoading(productId);
+      const res = await api.put("/cart/quantity", {
+        userId,
+        productId,
+        quantity: quantity - 1,
+      });
+
+      if (res.data.success) {
+        dispatch(setCart(res.data.cart.items));
+      } else {
+        toast.error(res.data.message || "Unable to update cart quantity.");
+      }
     } catch (err) {
-      console.log(err);
+      toast.error(err.response?.data?.message || "Unable to update cart quantity.");
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleRemove = async (productId) => {
     try {
-      await api.post("/cart/remove", {
+      setActionLoading(productId);
+      const res = await api.post("/cart/remove", {
         userId,
         productId,
       });
 
-      loadCart();
+      if (res.data.success) {
+        dispatch(setCart(res.data.cart.items));
+      } else {
+        toast.error(res.data.message || "Unable to remove item.");
+      }
     } catch (err) {
-      console.log(err);
+      toast.error(err.response?.data?.message || "Unable to remove item.");
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleCheckout = () => {
-    alert("Proceeding to checkout");
+    toast.success("Proceeding to checkout");
     dispatch(clearCart());
   };
 
@@ -143,8 +163,9 @@ const CartPage = () => {
                       item.quantity
                     )
                   }
+                  disabled={actionLoading === item.productId._id}
                 >
-                  +
+                  {actionLoading === item.productId._id ? "+" : "+"}
                 </button>
 
                 <button
@@ -154,6 +175,7 @@ const CartPage = () => {
                       item.quantity
                     )
                   }
+                  disabled={item.quantity <= 1 || actionLoading === item.productId._id}
                 >
                   -
                 </button>
@@ -162,8 +184,9 @@ const CartPage = () => {
                   onClick={() =>
                     handleRemove(item.productId._id)
                   }
+                  disabled={actionLoading === item.productId._id}
                 >
-                  Remove
+                  {actionLoading === item.productId._id ? "Removing..." : "Remove"}
                 </button>
 
               </div>
@@ -186,8 +209,9 @@ const CartPage = () => {
           <button
             className="checkout-button"
             onClick={handleCheckout}
+            disabled={loading}
           >
-            Checkout
+            {loading ? "Loading..." : "Checkout"}
           </button>
 
         </div>

@@ -1,11 +1,28 @@
 const Wishlist = require("../models/wishlistModel");
 
+const mongoose = require("mongoose");
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+
 // ===========================
 // Get Wishlist
 // ===========================
 exports.getWishlist = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    if (!isValidObjectId(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to access this wishlist",
+      });
+    }
 
     let wishlist = await Wishlist.findOne({ userId })
       .populate("items.productId");
@@ -37,6 +54,20 @@ exports.getWishlist = async (req, res) => {
 exports.addItem = async (req, res) => {
   try {
     const { userId, productId } = req.body;
+
+    if (!isValidObjectId(userId) || !isValidObjectId(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid user ID and product ID are required",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to modify this wishlist",
+      });
+    }
 
     let wishlist = await Wishlist.findOne({ userId });
 
@@ -82,6 +113,20 @@ exports.addItem = async (req, res) => {
 exports.removeItem = async (req, res) => {
   try {
     const { userId, productId } = req.body;
+
+    if (!isValidObjectId(userId) || !isValidObjectId(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid user ID and product ID are required",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to modify this wishlist",
+      });
+    }
 
     const wishlist = await Wishlist.findOne({ userId });
 

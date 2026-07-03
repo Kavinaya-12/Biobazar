@@ -1,5 +1,8 @@
 const Profile = require("../models/profileModel");
 
+const isNonEmptyString = (value) =>
+  typeof value === "string" && value.trim().length > 0;
+
 exports.getProfile = async (req, res) => {
 
   try {
@@ -46,17 +49,29 @@ exports.createProfile = async (req, res) => {
       profilePicture,
     } = req.body;
 
+    if (!userId || !isNonEmptyString(fullName)) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID and full name are required",
+      });
+    }
+
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to create this profile",
+      });
+    }
+
     const exists = await Profile.findOne({
       userId,
     });
 
     if (exists) {
-
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         message: "Profile already exists",
       });
-
     }
 
     const profile = await Profile.create({
@@ -90,11 +105,31 @@ exports.updateProfile = async (req, res) => {
 
     const { userId } = req.params;
 
+    if (!req.user || !req.user.user_id || req.user.user_id.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update this profile",
+      });
+    }
+
+    const { fullName, bio, location, profilePicture } = req.body;
+
+    if (fullName !== undefined && !isNonEmptyString(fullName)) {
+      return res.status(400).json({
+        success: false,
+        message: "Full name cannot be empty",
+      });
+    }
+
+    const updateData = {};
+    if (fullName !== undefined) updateData.fullName = fullName.trim();
+    if (bio !== undefined) updateData.bio = bio;
+    if (location !== undefined) updateData.location = location;
+    if (profilePicture !== undefined) updateData.profilePicture = profilePicture;
+
     const updatedProfile = await Profile.findOneAndUpdate(
-      {
-        userId,
-      },
-      req.body,
+      { userId },
+      updateData,
       {
         new: true,
         runValidators: true,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 import { api } from "../api";
 
@@ -113,7 +114,7 @@ const Foods = () => {
       }
     } catch (err) {
       console.error("Wishlist error:", err);
-      alert(err.response?.data?.message || "Error updating wishlist");
+      toast.error(err.response?.data?.message || "Error updating wishlist");
     }
   };
 

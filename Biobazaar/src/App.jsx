@@ -1,8 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 import Header from "./Components/Header";
 import CheckAuth from "./Components/CheckAuth";
+import { logout } from "./redux/authSlice";
+import { Toaster, toast } from "react-hot-toast";
 
 import Home from "./Components/Home";
 import Login from "./Components/Login";
@@ -18,34 +21,67 @@ import PersonalCare from "./Components/PersonalCare";
 import LifeStyle from "./Components/Lifestyle";
 import Household from "./Components/Household";
 import SearchResults from "./Components/SearchResults";
+import { fetchProducts } from "./redux/productSlice";
 
 function App() {
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
+  useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) return;
 
+    const decodeToken = (jwt) => {
+      try {
+        const base64Url = jwt.split(".")[1];
+        if (!base64Url) return null;
+
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map((c) => `%${("00" + c.charCodeAt(0).toString(16)).slice(-2)}`)
+            .join("")
+        );
+
+        return JSON.parse(jsonPayload);
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const payload = decodeToken(token);
+    if (!payload || typeof payload.exp !== "number") {
+      dispatch(logout());
+      return;
+    }
+
+    const expiresAt = payload.exp * 1000;
+    const now = Date.now();
+    const remainingTime = expiresAt - now;
+
+    if (remainingTime <= 0) {
+      dispatch(logout());
+      return;
+    }
+
     const logoutTimer = setTimeout(() => {
-
-      localStorage.removeItem("token");
-      localStorage.removeItem("userId");
-      localStorage.removeItem("userEmail");
-
-      alert("Your session has expired. Please login again.");
-
+      dispatch(logout());
+      toast.error("Your session has expired. Please login again.");
       window.location.href = "/login";
-
-    }, 60 * 60 * 1000);
+    }, remainingTime);
 
     return () => clearTimeout(logoutTimer);
-
-  }, []);
+  }, [dispatch]);
 
   return (
     <Router>
       <Header />
+      <Toaster position="top-right" />
 
       <Routes>
 
