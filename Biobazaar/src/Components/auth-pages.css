@@ -1,0 +1,16 @@
+.auth-page{--auth-paper:#f8f5ed;--auth-card:#fffdf8;--auth-forest:#294936;--auth-deep:#1f382a;--auth-clay:#bd7658;--auth-ink:#273c30;--auth-muted:#72796d;min-height:calc(100vh - 92px);display:grid;place-items:center;padding:clamp(1.5rem,5vw,4rem) 1rem;background:radial-gradient(ellipse at 8% 12%,#e9eadd 0,transparent 32%),radial-gradient(ellipse at 91% 88%,#f0e3d7 0,transparent 30%),var(--auth-paper);color:var(--auth-ink)}
+.auth-card{position:relative;width:min(100%,470px);padding:clamp(1.7rem,5vw,3.1rem);background:var(--auth-card);border:1px solid rgba(41,73,54,.15);box-shadow:0 24px 70px rgba(39,60,48,.1)}
+.auth-card:before{content:"";position:absolute;top:0;left:0;width:64px;height:3px;background:var(--auth-clay)}
+.auth-kicker{margin:0 0 .7rem;color:var(--auth-forest);font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.auth-card h1{margin:0 0 .6rem;color:var(--auth-deep);font:500 clamp(2.2rem,6vw,3rem)/1.08 Georgia,serif;letter-spacing:-.04em}
+.auth-intro{margin:0 0 1.8rem;color:var(--auth-muted);font-size:.9rem;line-height:1.65}
+.auth-form{display:grid;gap:.55rem}
+.auth-form label{margin-top:.45rem;color:var(--auth-deep);font-size:.78rem;font-weight:650}
+.auth-help{margin-top:-.35rem;color:var(--auth-muted,var(--auth-deep));font-size:.72rem;line-height:1.45}
+.auth-form input{width:100%;min-height:48px;padding:.75rem .85rem;border:1px solid rgba(41,73,54,.22);border-radius:2px;background:#fff;color:var(--auth-ink);font:inherit;font-size:.88rem;transition:border-color .18s,box-shadow .18s}
+.auth-form input:focus{outline:0;border-color:var(--auth-forest);box-shadow:0 0 0 3px rgba(41,73,54,.12)}
+.auth-submit{min-height:49px;margin-top:.8rem;padding:.8rem 1rem;border:1px solid var(--auth-forest);border-radius:2px;background:var(--auth-forest);color:#fffdf8;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:background .18s}
+.auth-submit:hover:not(:disabled){background:var(--auth-deep)}.auth-submit:disabled{opacity:.65;cursor:wait}
+.auth-note{margin:1.25rem 0 0;color:var(--auth-muted);font-size:.82rem;text-align:center}.auth-note a{color:var(--auth-forest);font-weight:700;text-underline-offset:3px}.auth-note a:hover{color:var(--auth-clay)}
+.auth-feedback{min-height:1.2em;margin:.35rem 0 0;color:#9c4d37;font-size:.78rem}
+@media(max-width:520px){.auth-page{min-height:calc(100vh - 78px);padding:1.2rem .85rem}.auth-card{padding:1.6rem 1.2rem}}

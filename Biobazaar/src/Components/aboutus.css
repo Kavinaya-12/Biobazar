@@ -1,0 +1,147 @@
+.about-wrapper{position:relative;min-height:calc(100vh - 119px);padding:clamp(48px,7vw,92px) clamp(20px,6vw,90px) 70px;overflow:hidden;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif}.about-shapes .shape{display:none}.about-grid{max-width:1180px;grid-template-columns:minmax(250px,.86fr) minmax(0,1.14fr);gap:clamp(35px,7vw,100px);align-items:start}.about-left{padding-top:8px}.about-eyebrow{margin:0 0 17px;color:var(--forest);font-size:10px;font-weight:700;letter-spacing:.15em}.about-heading{margin:0 0 22px;color:var(--deep);font:500 clamp(2.8rem,5.3vw,5rem)/1.04 var(--serif);letter-spacing:-.035em}.about-subtext{max-width:450px;color:var(--muted);font-size:14px;line-height:1.9}.about-subtext strong{color:var(--forest)}.about-right{display:grid;gap:0;border-top:1px solid var(--line)}.about-card{margin:0;padding:23px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none;backdrop-filter:none;transition:none}.about-card:hover{transform:none;box-shadow:none}.about-card h2{margin:0 0 10px;color:var(--forest);font:500 1.5rem var(--serif)}.about-card p,.about-card ul{margin:0;color:var(--muted);font-size:12px;line-height:1.85}.about-card ul{padding-left:18px;columns:2;column-gap:24px}.about-card li{margin:0 0 7px;break-inside:avoid}.about-quote{max-width:800px;margin:58px auto 0;padding:26px 20px;border-top:1px solid var(--sage);border-bottom:1px solid var(--sage);color:var(--forest);font:italic 500 clamp(1.4rem,3vw,2.1rem)/1.5 var(--serif)}.about-actions{display:flex;justify-content:center;margin-top:25px}.about-shop-link{display:inline-flex;align-items:center;gap:10px;padding:14px 18px;background:var(--forest);color:#fffdf7;font-size:11px;font-weight:700}.about-shop-link:hover{background:#3e6348}@media(max-width:900px){.about-grid{grid-template-columns:1fr;gap:25px}.about-heading{max-width:700px}.about-subtext{font-size:13px}}@media(max-width:575px){.about-wrapper{padding:42px 18px 50px}.about-card{padding:18px 0}.about-card ul{columns:1}.about-quote{margin-top:35px;padding-inline:5px}}
+.about-wrapper {
+  position: relative;
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, #cdece3 0%, #eafaf5 38%, #f5fbf9 100%);
+  padding: 4rem 2rem 5rem;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif;
+  color: #1f2d3d;
+}
+
+.about-shapes .shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  background: #3a9d7a;
+  filter: blur(30px);
+  animation: drift 20s infinite alternate ease-in-out;
+}
+
+.shape1 {
+  width: 250px;
+  height: 250px;
+  top: 10%;
+  left: -80px;
+}
+
+.shape2 {
+  width: 300px;
+  height: 300px;
+  bottom: 15%;
+  right: -100px;
+  background: #64c5a2;
+}
+
+.shape3 {
+  width: 180px;
+  height: 180px;
+  top: 50%;
+  left: 50%;
+  background: #2f7a5d;
+}
+
+@keyframes drift {
+  from { transform: translateY(0) rotate(0); }
+  to { transform: translateY(-50px) rotate(20deg); }
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2.2rem;
+  align-items: start;
+  max-width: 1180px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.about-left {
+  text-align: left;
+  padding-top: 0.75rem;
+}
+
+.about-heading {
+  font-size: clamp(2.4rem, 4vw, 3.5rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #0f3d2c;
+  line-height: 1.1;
+}
+
+.about-subtext {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #2f4f3e;
+}
+
+.about-card {
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 20px;
+  padding: 1.6rem 1.8rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 16px 32px rgba(15, 61, 44, 0.09);
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(58, 157, 122, 0.08);
+}
+
+.about-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.12);
+}
+
+.about-card h2 {
+  font-size: 1.6rem;
+  color: #207d5c;
+  margin-bottom: 0.8rem;
+}
+
+.about-card p,
+.about-card ul {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #334e43;
+}
+
+.about-card ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.about-card li {
+  margin-bottom: 0.5rem;
+}
+
+.about-quote {
+  margin-top: 3rem;
+  text-align: center;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-weight: 600;
+  color: #145c43;
+  position: relative;
+  z-index: 1;
+  font-style: italic;
+  padding: 0 12px;
+}
+
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-left {
+    text-align: center;
+  }
+}
+
+@media (max-width: 575px) {
+  .about-wrapper {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .about-card {
+    padding: 1.3rem 1rem;
+  }
+}                    
