@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test:unit": "node --test src/utils/comparison.test.js src/utils/onboarding.test.js src/utils/productCardPresentation.test.js src/utils/priceComparison.test.js src/utils/productClassification.test.js src/utils/productInformationCoverage.test.js",
+    "test:unit": "node --test src/apiBaseUrl.test.js src/utils/comparison.test.js src/utils/onboarding.test.js src/utils/productCardPresentation.test.js src/utils/priceComparison.test.js src/utils/productClassification.test.js src/utils/productInformationCoverage.test.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
